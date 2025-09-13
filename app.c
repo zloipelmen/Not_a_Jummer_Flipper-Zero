@@ -11,7 +11,7 @@ Simplified Sub-GHz Toggle Beacon app for Flipper Zero (compatible with broader S
 
 #define APP_NAME "Not a Jummer"
 
-static const uint32_t DEFAULT_FREQ_HZ = 433920000UL;
+static const uint32_t DEFAULT_FREQ_HZ = 436000000UL;
 static const uint32_t BURST_MS = 100;
 static const uint32_t PERIOD_MS = 1000;
 
@@ -116,14 +116,20 @@ static void input_callback(InputEvent* event, void* context) {
     
 
 static void subghz_send_burst(void) {
-    uint32_t end = furi_get_tick() + furi_ms_to_ticks(BURST_MS);
+    const uint32_t tone_hz = 440;
+    const uint32_t half_period_us = 1000000u / (tone_hz * 2u); // ~1136 мкс для 440 Гц
+    const uint32_t end = furi_get_tick() + furi_ms_to_ticks(BURST_MS);
+
+    // Частота эфира выставляется в tx_worker перед вызовом, здесь просто «моргаем» несущей:
     while(furi_get_tick() < end) {
-        furi_hal_subghz_tx();
-        furi_delay_us(200);
-        furi_hal_subghz_idle();
-        furi_delay_us(200);
+        furi_hal_subghz_tx();        // несущая ВКЛ
+        furi_delay_us(half_period_us);
+        furi_hal_subghz_idle();      // несущая ВЫКЛ
+        furi_delay_us(half_period_us);
     }
 }
+
+
 
 static int32_t tx_worker(void* ctx) {
     AppState* app = ctx;
