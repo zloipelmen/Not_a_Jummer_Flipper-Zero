@@ -1,0 +1,17 @@
+App(
+    appid="not_a_jummer",
+    name="Not a Jammer",
+    entry_point="not_a_jummer_app",
+    sources=["app.c"],
+    targets=["f7"],
+    apptype=FlipperAppType.EXTERNAL,
+
+    # укажем системную иконку: это не путь к файлу, а встроенный ресурс UI
+    fap_icon="radio.png",
+    fap_category="User",
+    fap_author="you",
+    fap_version="1.1",
+    fap_description="Safe Sub-GHz beacon with adjustable step.",
+)
+
+
